@@ -84,13 +84,22 @@ def type_banner() -> None:
 
 def loading_bar(seconds: float = 1.4, width: int = 30) -> None:
     print(f"{DIM}  Initialising Ghost Trading Engine...{RESET}")
+    tty = sys.stdout.isatty()
     steps = 40
     for i in range(1, steps + 1):
         done = int(width * i / steps)
         bar = "\u2588" * done + "\u2591" * (width - done)
         pct = int(100 * i / steps)
-        sys.stdout.write(f"\r{SAFFRON}  [{bar}]{RESET} {DIM}{pct}%{RESET}")
+        line = f"{SAFFRON}  [{bar}]{RESET} {DIM}{pct}%{RESET}"
+        if tty:
+            sys.stdout.write(f"\r{line}")
+        else:
+            sys.stdout.write(f"\n{line}")
         sys.stdout.flush()
+        time.sleep(seconds / steps)
+    done = f"{GREEN}  [{'#' * width}]{RESET} {DIM}100% - Engine ready{RESET}"
+    sys.stdout.write(("\r" if tty else "\n") + done + "\n")
+    sys.stdout.flush()
         time.sleep(seconds / steps)
     sys.stdout.write(f"\r{GREEN}  [{'#' * width}]{RESET} {DIM}100% - Engine ready{RESET}\n")
 
