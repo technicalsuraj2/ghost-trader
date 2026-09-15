@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Ghost Trader - MT5 Auto Trade launcher for Kali Linux.
 
-Runs a saffron (kesari) animated intro banner and then shows a menu:
+Shows a full-filled saffron (kesari) animated banner, then a solid menu:
     1. Start Auto Trade     -> opens the MT5 desktop controller in a new window/tab
     2. Go to Author Account -> opens the author's GitHub in the browser
     3. Exit
@@ -15,109 +15,130 @@ import time
 import webbrowser
 
 # ---------------------------------------------------------------------------
-# ANSI colour helpers (saffron / kesari theme)
+# ANSI colours (saffron / kesari theme)
 # ---------------------------------------------------------------------------
-SAFFRON = "\033[38;2;255;153;51m"
-GOLD    = "\033[38;2;255;204;102m"
-WHITE   = "\033[97m"
-DIM     = "\033[90m"
-CYAN    = "\033[96m"
-GREEN   = "\033[92m"
-RED     = "\033[91m"
-BOLD    = "\033[1m"
-RESET   = "\033[0m"
-CLEAR   = "\033[2J\033[H"
-UP_LINE = "\033[1A\033[2K"
+SAFFRON   = "\033[38;2;255;153;51m"
+SAFFRON_BG = "\033[48;2;255;153;51m"
+GOLD      = "\033[38;2;255;204;102m"
+WHITE     = "\033[97m"
+DIM       = "\033[90m"
+CYAN      = "\033[96m"
+GREEN     = "\033[92m"
+RED       = "\033[91m"
+BLACK_B   = "\033[30;1m"
+BOLD      = "\033[1m"
+RESET     = "\033[0m"
+CLEAR     = "\033[2J\033[H"
 
 BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
 APP_SCRIPT = os.path.join(BASE_DIR, "mt5_control_app.py")
 AUTHOR_URL = "https://github.com/technicalsuraj2"
 
-# figlet "standard" art (raw string so backslashes stay literal)
-BANNER = r"""
-  ____ _   _  ___  ____ _____   _____ ____      _    ____  _____ 
- / ___| | | |/ _ \/ ___|_   _| |_   _|  _ \    / \  |  _ \| ____|
-| |  _| |_| | | | \___ \ | |     | | | |_) |  / _ \ | | | |  _|  
-| |_| |  _  | |_| |___) || |     | | |  _ <  / ___ \| |_| | |___ 
- \____|_| |_|\___/|____/ |_|     |_| |_| \_\/_/   \_\____/|_____|
-"""
+# Solid filled figlet "banner" art
+ART = [
+    " #####  #     # #######  #####  ####### ",
+    "#     # #     # #     # #     #    #    ",
+    "#       #     # #     # #          #    ",
+    "#  #### ####### #     #  #####     #    ",
+    "#     # #     # #     #       #    #    ",
+    "#     # #     # #     # #     #    #    ",
+    " #####  #     # #######  #####     #    ",
+    "                                     ",
+    "####### ######     #    ######  ####### ",
+    "   #    #     #   # #   #     # #       ",
+    "   #    #     #  #   #  #     # #       ",
+    "   #    ######  #     # #     # #####   ",
+    "   #    #   #   ####### #     # #       ",
+    "   #    #    #  #     # #     # #       ",
+    "   #    #     # #     # ######  ####### ",
+]
 
-TITLE = "GHOST TRADE"
+W = max(len(line) for line in ART)
+PAD = 4
+FULL = W + PAD * 2
 
 
-def cprint(text: str, colour: str = WHITE, bold: bool = False) -> None:
-    print(f"{BOLD if bold else ''}{colour}{text}{RESET}")
+def solid_line(text: str = "") -> str:
+    """One full-width line with solid saffron background (filled banner)."""
+    return f"{SAFFRON_BG}{BLACK_B}{text.ljust(FULL)}{RESET}"
 
 
-def type_line(text: str, delay: float = 0.025, colour: str = SAFFRON) -> None:
-    print(colour, end="")
-    for ch in text:
-        print(ch, end="", flush=True)
+def solid_type(text: str, delay: float = 0.03) -> None:
+    """Typewriter on a single filled line (no cursor-up tricks)."""
+    sys.stdout.write(solid_line())
+    time.sleep(0.05)
+    for i in range(1, len(text) + 1):
+        sys.stdout.write("\r" + solid_line(text[:i].ljust(len(text))))
+        sys.stdout.flush()
         time.sleep(delay)
-    print(RESET)
+    sys.stdout.write("\n")
 
 
 def type_banner() -> None:
-    for line in BANNER.splitlines():
-        type_line(line, delay=0.016)
+    print(solid_line())
+    for line in ART:
+        sys.stdout.write(solid_line(line) + "\n")
+        time.sleep(0.04)
+    print(solid_line())
 
 
-def loading_bar(seconds: float = 1.6, width: int = 34) -> None:
-    print(f"{DIM}   Initialising Ghost Trading Engine...{RESET}\n")
+def loading_bar(seconds: float = 1.4, width: int = 30) -> None:
+    print(f"{DIM}  Initialising Ghost Trading Engine...{RESET}")
     steps = 40
     for i in range(1, steps + 1):
         done = int(width * i / steps)
-        bar = "=" * done + ">" + "-" * (width - done - 1)
-        print(f"{SAFFRON}   [{bar}]{RESET} {int(100 * i / steps)}%", end="", flush=True)
+        bar = "\u2588" * done + "\u2591" * (width - done)
+        pct = int(100 * i / steps)
+        sys.stdout.write(f"\r{SAFFRON}  [{bar}]{RESET} {DIM}{pct}%{RESET}")
+        sys.stdout.flush()
         time.sleep(seconds / steps)
-        print(UP_LINE, end="")
-    print(f"{GREEN}   [{'=' * width}] 100% - Engine ready{RESET}\n")
+    sys.stdout.write(f"\r{GREEN}  [{'#' * width}]{RESET} {DIM}100% - Engine ready{RESET}\n")
 
 
 def show_banner() -> None:
     print(CLEAR + "\n", end="")
     time.sleep(0.15)
     type_banner()
-    time.sleep(0.1)
-    # pulse the title 3 times
-    for _ in range(3):
-        cprint(TITLE.center(62), SAFFRON, bold=True)
-        time.sleep(0.18)
-        print(UP_LINE, end="")
-        time.sleep(0.12)
-    cprint(TITLE.center(62), SAFFRON, bold=True)
-    print()
-    print(f"{GOLD}{'~' * 62}{RESET}")
-    print(f"{CYAN}   MT5 AUTO TRADE TERMINAL   {DIM}|   Kali Linux Edition{RESET}")
-    print(f"{GOLD}{'~' * 62}{RESET}\n")
+    time.sleep(0.15)
+    print(solid_line("GHOST TRADE"))
+    print(solid_line("MT5 AUTO TRADE TERMINAL  |  KALI LINUX  |  KESARI EDITION"))
+    print(solid_line())
+    print(solid_line())
     loading_bar()
     time.sleep(0.3)
-    cprint("   >> Connecting to MetaTrader 5 terminal...", CYAN, bold=True)
+    print(f"{CYAN}  >> Connecting to MetaTrader 5 terminal...{RESET}")
     time.sleep(0.5)
+
+
+MENU = [
+    "",
+    "GHOST TRADE  -  MAIN MENU",
+    "",
+    "   [1]  Start Auto Trade",
+    "   [2]  Go to Author Account",
+    "   [3]  Exit",
+    "",
+]
 
 
 def show_menu() -> int:
     print()
-    cprint("┌──────────────────────────────────────────────┐", WHITE)
-    cprint("            GHOST TRADE  -  MAIN MENU", SAFFRON, bold=True)
-    cprint("├──────────────────────────────────────────────┤", WHITE)
-    cprint("   [1]  Start Auto Trade", GOLD)
-    cprint("   [2]  Go to Author Account", GOLD)
-    cprint("   [3]  Exit", GOLD)
-    cprint("└──────────────────────────────────────────────┘", WHITE)
+    for line in MENU:
+        sys.stdout.write(solid_line(line) + "\n")
+        time.sleep(0.04)
     while True:
         choice = input(f"{SAFFRON}ghost-trader > {RESET}").strip()
         if choice in ("1", "2", "3"):
             return int(choice)
-        cprint("Invalid option. Choose 1, 2 or 3.", RED)
+        print(f"{RED}  Invalid option. Choose 1, 2 or 3.{RESET}")
 
 
 def start_auto_trade() -> None:
     print()
-    cprint("Launching MT5 Auto Trade controller in a new window...", GOLD, bold=True)
+    print(f"{GOLD}  Launching MT5 Auto Trade controller in a new window...{RESET}")
     time.sleep(0.6)
     if not os.path.exists(APP_SCRIPT):
-        cprint(f"[!] Control app not found: {APP_SCRIPT}", RED)
+        print(f"{RED}  [!] Control app not found: {APP_SCRIPT}{RESET}")
         return
     try:
         subprocess.Popen(
@@ -126,21 +147,21 @@ def start_auto_trade() -> None:
             stderr=subprocess.DEVNULL,
             start_new_session=True,
         )
-        cprint("[+] Auto Trade opened. Switch to the new window/tab and connect MT5.", GREEN)
+        print(f"{GREEN}  [+] Auto Trade opened. Switch to the new window/tab and connect MT5.{RESET}")
     except Exception as exc:
-        cprint(f"[!] Could not launch control app: {exc}", RED)
+        print(f"{RED}  [!] Could not launch control app: {exc}{RESET}")
 
 
 def go_to_author() -> None:
     print()
-    cprint(f"Opening author account -> {AUTHOR_URL}", GOLD)
+    print(f"{GOLD}  Opening author account -> {AUTHOR_URL}{RESET}")
     time.sleep(0.5)
     try:
         webbrowser.open(AUTHOR_URL)
-        cprint("[+] Redirected to author GitHub.", GREEN)
+        print(f"{GREEN}  [+] Redirected to author GitHub.{RESET}")
     except Exception as exc:
-        cprint(f"[!] Could not open browser: {exc}", RED)
-        cprint(f"    Visit: {AUTHOR_URL}", CYAN)
+        print(f"{RED}  [!] Could not open browser: {exc}{RESET}")
+        print(f"{CYAN}  Visit: {AUTHOR_URL}{RESET}")
 
 
 def main() -> None:
@@ -153,7 +174,7 @@ def main() -> None:
             elif choice == 2:
                 go_to_author()
             else:
-                cprint("Exiting Ghost Trader. Goodbye!", DIM)
+                print(f"{DIM}  Exiting Ghost Trader. Goodbye!{RESET}")
                 time.sleep(0.6)
                 print(CLEAR, end="")
                 break
