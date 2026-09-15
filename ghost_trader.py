@@ -100,8 +100,6 @@ def loading_bar(seconds: float = 1.4, width: int = 30) -> None:
     done = f"{GREEN}  [{'#' * width}]{RESET} {DIM}100% - Engine ready{RESET}"
     sys.stdout.write(("\r" if tty else "\n") + done + "\n")
     sys.stdout.flush()
-        time.sleep(seconds / steps)
-    sys.stdout.write(f"\r{GREEN}  [{'#' * width}]{RESET} {DIM}100% - Engine ready{RESET}\n")
 
 
 def show_banner() -> None:
