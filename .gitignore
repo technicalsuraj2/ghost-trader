@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+.venv/
+venv/
+
+# Local secrets / saved credentials
+.env
+*.env
+accounts.json
+*.token
+
+# IDE and operating-system files
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
