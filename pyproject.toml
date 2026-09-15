@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "mt5-auto-trader-controller"
 version = "0.1.0"
-description = "A desktop controller for an already logged-in MetaTrader 5 terminal."
+description = "Ghost Trader - Kali Linux launcher and MT5 auto trade controller."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = ["MetaTrader5==5.0.6147"]
@@ -14,6 +14,7 @@ keywords = ["metatrader5", "mt5", "trading", "desktop"]
 
 [project.scripts]
 mt5-auto-trader = "mt5_control_app:main"
+ghost-trader = "ghost_trader:main"
 
 [tool.setuptools]
-py-modules = ["mt5_control_app"]
+py-modules = ["mt5_control_app", "ghost_trader"]

@@ -7,7 +7,10 @@ import tkinter as tk
 from dataclasses import dataclass
 from tkinter import messagebox, scrolledtext, ttk
 
-import MetaTrader5 as mt5
+try:
+    import MetaTrader5 as mt5
+except ImportError:  # MetaTrader5 wheel is Windows-only
+    mt5 = None
 
 
 @dataclass
@@ -79,6 +82,11 @@ class App:
             raise ValueError("Lot must be positive; profit and loss targets cannot be negative.")
 
     def connect(self):
+        if mt5 is None:
+            self.connected = False
+            self.status.set("MetaTrader5 module missing")
+            self.write("MetaTrader5 module not available; install it first.")
+            return
         try:
             self.settings = self.config()
             if not mt5.initialize(timeout=60000): raise RuntimeError(mt5.last_error())
@@ -141,6 +149,13 @@ def main() -> None:
     """Launch the local desktop controller."""
     root = tk.Tk()
     App(root)
+    if mt5 is None:
+        messagebox.showerror(
+            "MetaTrader5 module missing",
+            "The MetaTrader5 Python package is not available on this system.\n\n"
+            "Run MT5 terminal (e.g. via Wine on Kali) and install it first:\n"
+            "  pip install MetaTrader5\n\nAll actions will be blocked until it is installed.",
+        )
     root.mainloop()
 
 
