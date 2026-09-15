@@ -110,6 +110,20 @@ python mt5_control_app.py
   💛 Star this repo ⭐ aur share karo spread the love 💖
 </p>
 
+## 💛 Support / Donate
+
+Ghost Trader **100% free** he — agar tool kaam aaya aur tum support karna chaho, toh
+koi bhi amount (USDT - Tron/TRC20) drop kar sakte ho. Har chhota sa support matter karta he 🙏
+
+```
+📮  TRC20 (USDT - Tron)
+────────────────────────────────────────────
+  TBnsqWuvdhm7HDyhozF1ZspnX58GGaM6no
+────────────────────────────────────────────
+```
+
+> ⚠️ **Ye address confirm karke bhejo** — galat address pe funds recover nahi hote. TRC20 honda hi he (Tron network), kyu ki ye address `T` se start hota he. Double-check karo paste se pehle. 🧡
+
 ## ⚠️ Disclaimer
 
 This is a **local controller**, not investment advice. Trading involves risk — only trade money you can afford to lose.
