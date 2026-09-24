@@ -8,9 +8,12 @@ version = "0.1.0"
 description = "Ghost Trader - Kali Linux launcher and MT5 auto trade controller."
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = ["MetaTrader5==5.0.6147"]
+dependencies = []
 license = {text = "MIT"}
 keywords = ["metatrader5", "mt5", "trading", "desktop"]
+
+[project.optional-dependencies]
+windows = ["MetaTrader5==5.0.6147"]
 
 [project.scripts]
 mt5-auto-trader = "mt5_control_app:main"
