@@ -1,1 +1,4 @@
+# Windows-only: MetaTrader5 wheel has no Linux build.
+# On Kali/Linux use: python -m pip install .
+# On Windows use: python -m pip install -r requirements.txt  OR  python -m pip install ".[windows]"
 MetaTrader5==5.0.6147
