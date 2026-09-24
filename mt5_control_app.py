@@ -142,7 +142,11 @@ class App:
             self.stop_event.wait(self.settings.poll_seconds)
 
     def stop(self): self.running = False; self.stop_event.set(); self.write("Auto manager stopped.")
-    def quit(self): self.stop(); mt5.shutdown(); self.root.destroy()
+    def quit(self):
+        self.stop()
+        if mt5 is not None:
+            mt5.shutdown()
+        self.root.destroy()
 
 
 def main() -> None:
